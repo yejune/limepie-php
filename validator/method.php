@@ -48,12 +48,6 @@ validator::addMethod('range', function(\limepie\validator $validator, $value, $p
 
 });
 
-validator::addMethod('email', function(\limepie\validator $validator, $value) {
-
-    return $validator->optional($value) || filter_var($value, FILTER_VALIDATE_EMAIL) !== FALSE;
-
-});
-
 validator::addMethod('url', function(\limepie\validator $validator, $value) {
 
     if ($validator->optional($value))
@@ -99,7 +93,7 @@ validator::addMethod('equalTo', function(\limepie\validator $validator, $value, 
     if ($param !== NULL)
     {
         $model = $validator->getData();
-        $valid = $value === (isset($model[$param]) ? $model[$param] : NULL);
+        $valid = $value === (isset($model[preg_replace('/^#/','',$param)]) ? $model[preg_replace('/^#/','',$param)] : NULL);
     }
 
     return $valid;
@@ -112,6 +106,12 @@ validator::addMethod('password', function(\limepie\validator $validator, $value,
 
 });
 
+validator::addMethod('email', function(\limepie\validator $validator, $value) {
+
+    return $validator->optional($value) || filter_var($value, FILTER_VALIDATE_EMAIL) !== FALSE;
+
+});
+
 validator::addMethod('birthday', function(\limepie\validator $validator, $value) {
 
     return preg_match('/^\d\d\d\d\d\d\d\d$/', $value) && strtotime($value) !== FALSE && $value < date('Ymd');
@@ -120,7 +120,7 @@ validator::addMethod('birthday', function(\limepie\validator $validator, $value)
 
 validator::addMethod('joinage', function(\limepie\validator $validator, $value, $param) {
 
-    return date("Y") - (int)substr($value) >= (int)$param - 1;
+    return date("Y") - (int)substr($value,0,4) >= (int)$param - 1;
 
 });
 
