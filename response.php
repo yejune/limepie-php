@@ -39,7 +39,14 @@ class response
         }
         if(FALSE === empty($strUrl))
         {
-            echo '<script type="text/javascript">window.location.href="'.$strUrl.'";</script>';
+            switch($strUrl)
+            {
+                case 'history.back':
+                    echo '<script type="text/javascript">history.back();</script>';
+                    break;
+                default:
+                    echo '<script type="text/javascript">window.location.href="'.$strUrl.'";</script>';
+            }
             exit();
         }
     }
