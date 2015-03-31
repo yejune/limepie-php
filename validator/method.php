@@ -9,21 +9,21 @@ validator::addMethod('required', function($name, $value, $param) {
 
 }, '필수 항목입니다. 입력해주세요.');
 
-validator::addMethod('minLength', function($name, $value, $param) {
+validator::addMethod('minlength', function($name, $value, $param) {
 
     $length = is_array($value) ? count($value) : strlen($value);
     return $this->optional($value) || $length >= $param;
 
 });
 
-validator::addMethod('maxLength', function($name, $value, $param) {
+validator::addMethod('maxlength', function($name, $value, $param) {
 
     $length = is_array($value) ? count($value) : strlen($value);
     return $this->optional($value) || $length <= $param;
 
 });
 
-validator::addMethod('rangeLength', function($name, $value, $param) {
+validator::addMethod('rangelength', function($name, $value, $param) {
 
     $length = is_array($value) ? count($value) : strlen($value);
     return $this->optional($value) || $length >= $param[0] && $length <= $param[1];
@@ -150,13 +150,13 @@ validator::addMethod('range', function($name, $value, $param) {
 
 });
 
-validator::addMethod('email', function($value) {
+validator::addMethod('email', function($name, $value, $param) {
 
     return $this->optional($value) || filter_var($value, FILTER_VALIDATE_EMAIL) !== FALSE;
 
 });
 
-validator::addMethod('url', function($value) {
+validator::addMethod('url', function($name, $value, $param) {
 
     if ($this->optional($value))
     {
@@ -172,19 +172,19 @@ validator::addMethod('url', function($value) {
 
 });
 
-validator::addMethod('date', function($value) {
+validator::addMethod('date', function($name, $value, $param) {
 
     return $this->optional($value) || strtotime($value) !== FALSE;
 
 });
 
-validator::addMethod('number', function($value) {
+validator::addMethod('number', function($name, $value, $param) {
 
     return $this->optional($value) || is_numeric($value);
 
 });
 
-validator::addMethod('digits', function($value) {
+validator::addMethod('digits', function($name, $value, $param) {
 
     return $this->optional($value) || preg_match('/^\d+$/', $value);
 
@@ -213,7 +213,7 @@ validator::addMethod('password', function($name, $value, $param) {
 
 });
 
-validator::addMethod('birthday', function($value) {
+validator::addMethod('birthday', function($name, $value, $param) {
 
     return $this->optional($value) || preg_match('/^\d\d\d\d\d\d\d\d$/', $value) && strtotime($value) !== FALSE && $value < date('Ymd');
 
