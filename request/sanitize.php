@@ -8,11 +8,33 @@ class sanitize// extends validate
 
     public static $defaultNoticeError = FALSE;
 
-    public static function run($dataName, $key, $type, $default=NULL)
+    public static function run($dataName, $key, $type, $default=NULL, $arrayData=NULL)
     {
 
-        $val  = validate::getData($dataName,$key);
-        $data = '';
+        if(explode('.',$type)[0] == 'array')
+        {
+            $val  = validate::getData($dataName,$key);
+            $data = [];
+            if(FALSE === is_array($val)) $val[]=NULL;
+            foreach($val as $k => $v)
+            {
+                $data[$k] = self::run($dataName,$key,explode('.',$type)[1],$default,$v);
+            }
+            return $data;
+        }
+        else
+        {
+            if(FALSE === is_null($arrayData) && FALSE === request::isEmpty($arrayData))
+            {
+                $val = $arrayData;
+            }
+            else
+            {
+                $val  = validate::getData($dataName,$key);
+            }
+            $data = '';
+        }
+
 
         if(FALSE === request::isEmpty($val))
         {
@@ -188,7 +210,7 @@ class sanitize// extends validate
     public static function raw($val)
     {
 
-        return $val;
+        return TRUE !== is_null($val) ? $val : FALSE;
 
     }
 
