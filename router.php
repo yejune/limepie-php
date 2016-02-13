@@ -28,7 +28,7 @@ class router
     private $controllerNamespace = "<basedir>\<module>";
     private $actionSuffix        = "Action";
     private $controllerSuffix    = "Controller";
-    private $notFound            = ['(.*)' => ["module" => "main", "controller" => "error", "action" => "index"]];
+    private $notFound            = [];//['(.*)' => ["module" => "main", "controller" => "error", "action" => "index"]];
     private $errorInfo           = [];
 
     public function __construct($routes)
@@ -57,10 +57,10 @@ class router
 
     }
 
-    public function setControllerNamespace($className)
+    public function setControllerNamespace($namespaceName)
     {
 
-        $this->controllerNamespace = $className;
+        $this->controllerNamespace = $namespaceName;
 
     }
 

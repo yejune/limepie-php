@@ -126,7 +126,7 @@ class framework
 
             if (FALSE === class_exists($callClassName, FALSE))
             {
-                return $this->forwardNotFound($this->getRouter()->getNotFound(), ["CLASS_DOES_NOT_EXISTS", self::CLASS_DOES_NOT_EXISTS, $requireInfo]);
+                return $this->forwardNotFound(["CLASS_DOES_NOT_EXISTS", self::CLASS_DOES_NOT_EXISTS, $requireInfo]);
             }
 
             $requestMethod = "get";
@@ -153,7 +153,7 @@ class framework
                     return call_user_func_array([$instance, $action], $arguments);
                 }
             }
-            return $this->forwardNotFound($this->getRouter()->getNotFound(), ["METHOD_DOES_NOT_EXISTS", self::METHOD_DOES_NOT_EXISTS, $requireInfo]);
+            return $this->forwardNotFound(["METHOD_DOES_NOT_EXISTS", self::METHOD_DOES_NOT_EXISTS, $requireInfo]);
 
         }
         else
@@ -161,35 +161,39 @@ class framework
             $folderName = stream_resolve_include_path($folderName);
             if(FALSE === is_dir($folderName))
             {
-                return $this->forwardNotFound($this->getRouter()->getNotFound(), ["FOLDER_DOES_NOT_EXISTS", self::FOLDER_DOES_NOT_EXISTS, $requireInfo]);
+                return $this->forwardNotFound(["FOLDER_DOES_NOT_EXISTS", self::FOLDER_DOES_NOT_EXISTS, $requireInfo]);
             }
             else
             {
-                return $this->forwardNotFound($this->getRouter()->getNotFound(), ["FILE_DOES_NOT_EXISTS", self::FILE_DOES_NOT_EXISTS, $requireInfo]);
+                return $this->forwardNotFound(["FILE_DOES_NOT_EXISTS", self::FILE_DOES_NOT_EXISTS, $requireInfo]);
             }
         }
 
     }
 
-    private function forwardNotFound($routes = [], $arguments = [])
+    private function forwardNotFound($arguments = [])
     {
 
         //var $router, $framework, $newRouter;
 
-        $this->setPrevRouter(clone $this->getRouter());
-        $this->getRouter()->setRoutes($routes);
-        $framework  = self::getInstance();
-        $framework->setRouter($this->getRouter());
-        $newRouter  = $framework->getRouter();
+        $routes = $this->getRouter()->getNotFound();
+        if($routes) {
+            $this->setPrevRouter(clone $this->getRouter());
+            $this->getRouter()->setRoutes($routes);
+            $framework  = self::getInstance();
+            $framework->setRouter($this->getRouter());
+            $newRouter  = $framework->getRouter();
 
-        // $newRouter->setError($errorMessage, $errorCode, $errorData);
-
-        if($this->getPrevRouter()->getMatchRoute() == $newRouter->getMatchRoute())
-        {
-            throw new \limepie\router\exception(("error 404route."), "error 404route", $arguments);
+            if($this->getPrevRouter()->getMatchRoute() == $newRouter->getMatchRoute())
+            {
+                throw new \limepie\router\exception(("error 404route."), "error 404route", $arguments);
+            }
+            return $framework->dispatch($arguments);
         }
-        return $framework->dispatch($arguments);
-
+        else
+        {
+            new \limepie\error\controller($arguments[0], $arguments[1], $arguments[2]);
+        }
     }
 
     public function forward($routes = [], $arguments = [])
